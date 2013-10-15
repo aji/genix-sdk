@@ -1,0 +1,7 @@
+*.o
+*~
+*.swp
+*.elf
+*.rom
+gx-load/gx-load
+sbox

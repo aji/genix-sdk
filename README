@@ -1,0 +1,20 @@
+The tools and code snippets contained in GENIX:
+
+  gx-load
+    This is a set of linker scripts for compiling your code into an ELF
+    binary, and a utility for converting this ELF binary into a ROM image.
+    This is preferable to using linker scripts to produce a ROM directly
+    as it simplifies construction of the ROM header, and allows various
+    utilities such as `strip' to be used on the final ELF.
+
+-----[ EVERYTHING ABOVE THIS LINE IS (MOSTSLY) IMPLEMENTED ]-----
+
+  gx-log
+    Patchset for the gens emulator and 68k snippets for producing output
+    on the terminal. When certain compile-time parameters are defined,
+    these macros produce no code at all.
+
+  gx-z80
+    This is a set of linker scripts for producing COFF binaries for
+    the Genesis Z80. It is also a bit of 68000 code for loading these
+    binaries onto the Z80 and interacting with the Z80.
