@@ -75,6 +75,18 @@ void wr(u16 x, u16 y, unsigned palette, char *s)
 	}
 }
 
+#ifdef GX_LOGGING
+# define GX_LOG (*((unsigned char*)0xa05000))
+static void __gx_log_puts(const char *s)
+{
+	for (; *s; s++)
+		GX_LOG = *s;
+}
+# define gx_log_puts(a...) __gx_log_puts(a)
+#else
+# define gx_log_puts(a...)
+#endif
+
 int main(void)
 {
 	const char *alpha = "0123456789abcdef";
@@ -83,6 +95,8 @@ int main(void)
 	u8 *sctl = (u8*)0xa10009;
 	u8 now, was = 0;
 	u8 pos, neg;
+
+	gx_log_puts("coolgame starting\n");
 
 	vdp_init();
 
@@ -110,6 +124,8 @@ int main(void)
 		vdp_bg[i].hflip = 0;
 		vdp_bg[i].name = 0;
 	}
+
+	gx_log_puts("now entering main loop\n");
 
 	for (;;) {
 		while (!vdp_is_vblank());

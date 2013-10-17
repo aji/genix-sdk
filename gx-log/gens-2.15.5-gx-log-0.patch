@@ -1,0 +1,149 @@
+diff -rupN '-xMake*' gens-2.15.5/src/gens/gens_core/genix/genix.c gens-2.15.5-gx-log/src/gens/gens_core/genix/genix.c
+--- gens-2.15.5/src/gens/gens_core/genix/genix.c	1969-12-31 17:00:00.000000000 -0700
++++ gens-2.15.5-gx-log/src/gens/gens_core/genix/genix.c	2013-10-17 01:39:56.357579713 -0700
+@@ -0,0 +1,18 @@
++#include <stdio.h>
++
++void GENIX_Write(unsigned addr, unsigned data)
++{
++	switch (addr & 0xfff) {
++	case 0:
++		putchar(data);
++		break;
++
++	case 1:
++		printf("%d\n", data);
++		break;
++
++	case 2:
++		printf("0x%x\n", data);
++		break;
++	}
++}
+diff -rupN '-xMake*' gens-2.15.5/src/gens/gens_core/genix/genix.h gens-2.15.5-gx-log/src/gens/gens_core/genix/genix.h
+--- gens-2.15.5/src/gens/gens_core/genix/genix.h	1969-12-31 17:00:00.000000000 -0700
++++ gens-2.15.5-gx-log/src/gens/gens_core/genix/genix.h	2013-10-17 01:43:55.394370896 -0700
+@@ -0,0 +1,9 @@
++/* Copyright (C) 2013 Alex Iadicicco */
++/* Misc debugging utilities */
++
++#ifndef __INC_GENS_GENIX_H__
++#define __INC_GENS_GENIX_H__
++
++void GENIX_Write(unsigned addr, unsigned data);
++
++#endif
+diff -rupN '-xMake*' gens-2.15.5/src/gens/gens_core/mem/mem_z80.asm gens-2.15.5-gx-log/src/gens/gens_core/mem/mem_z80.asm
+--- gens-2.15.5/src/gens/gens_core/mem/mem_z80.asm	2005-03-08 14:02:39.000000000 -0700
++++ gens-2.15.5-gx-log/src/gens/gens_core/mem/mem_z80.asm	2013-10-17 01:36:54.989082130 -0700
+@@ -26,6 +26,8 @@ section .text align=64
+ 	extern _Read_To_68K_Space
+ 	extern _Write_To_68K_Space
+ 
++	extern GENIX_Write
++
+ 
+ 	;unsigned char Z80_ReadB(unsigned int Adr);
+ 	DECL Z80_ReadB
+@@ -51,7 +53,7 @@ section .text align=64
+ 			dd Z80_ReadB_Ram,		; 0x2000 - 0x2FFF
+ 			dd Z80_ReadB_Ram,		; 0x3000 - 0x3FFF
+ 			dd Z80_ReadB_YM2612,	; 0x4000 - 0x4FFF
+-			dd Z80_ReadB_YM2612,	; 0x5000 - 0x5FFF
++			dd Z80_ReadB_GENIX,	; 0x5000 - 0x5FFF
+ 			dd Z80_ReadB_Bank,		; 0x6000 - 0x6FFF
+ 			dd Z80_ReadB_PSG,		; 0x7000 - 0x7FFF
+ 			dd Z80_ReadB_68K_Ram,	; 0x8000 - 0x8FFF
+@@ -90,7 +92,7 @@ section .text align=64
+ 			dd Z80_ReadW_Ram,		; 0x2000 - 0x2FFF
+ 			dd Z80_ReadW_Ram,		; 0x3000 - 0x3FFF
+ 			dd Z80_ReadW_YM2612,	; 0x4000 - 0x4FFF
+-			dd Z80_ReadW_YM2612,	; 0x5000 - 0x5FFF
++			dd Z80_ReadW_GENIX,	; 0x5000 - 0x5FFF
+ 			dd Z80_ReadW_Bank,		; 0x6000 - 0x6FFF
+ 			dd Z80_ReadW_PSG,		; 0x7000 - 0x7FFF
+ 			dd Z80_ReadW_68K_Ram,	; 0x8000 - 0x8FFF
+@@ -131,7 +133,7 @@ section .text align=64
+ 			dd Z80_WriteB_Ram,		; 0x2000 - 0x2FFF
+ 			dd Z80_WriteB_Ram,		; 0x3000 - 0x3FFF
+ 			dd Z80_WriteB_YM2612,	; 0x4000 - 0x4FFF
+-			dd Z80_WriteB_YM2612,	; 0x5000 - 0x5FFF
++			dd Z80_WriteB_GENIX,	; 0x5000 - 0x5FFF
+ 			dd Z80_WriteB_Bank,		; 0x6000 - 0x6FFF
+ 			dd Z80_WriteB_PSG,		; 0x7000 - 0x7FFF
+ 			dd Z80_WriteB_68K_Ram,	; 0x8000 - 0x8FFF
+@@ -171,7 +173,7 @@ section .text align=64
+ 			dd Z80_WriteW_Ram,		; 0x2000 - 0x2FFF
+ 			dd Z80_WriteW_Ram,		; 0x3000 - 0x3FFF
+ 			dd Z80_WriteW_YM2612,	; 0x4000 - 0x4FFF
+-			dd Z80_WriteW_YM2612,	; 0x5000 - 0x5FFF
++			dd Z80_WriteW_GENIX,	; 0x5000 - 0x5FFF
+ 			dd Z80_WriteW_Bank,		; 0x6000 - 0x6FFF
+ 			dd Z80_WriteW_PSG,		; 0x7000 - 0x7FFF
+ 			dd Z80_WriteW_68K_Ram,	; 0x8000 - 0x8FFF
+@@ -216,6 +218,11 @@ section .text align=64
+ 		
+ 	ALIGN4
+ 
++	DECLF Z80_ReadB_GENIX, 4
++		; GENIX has no read right now
++		xor al, al
++		ret
++
+ 	DECLF Z80_ReadB_PSG, 4
+ 		cmp ecx, 0x7F04
+ 		jb short .bad
+@@ -302,6 +309,13 @@ section .text align=64
+ 		
+ 	ALIGN4
+ 
++	DECLF Z80_ReadW_GENIX, 4
++		; GENIX has no read right now
++		xor ax, ax
++		ret
++
++	ALIGN4
++
+ 	DECLF Z80_ReadW_PSG, 4
+ 		cmp ecx, 0x7F04
+ 		jb short .bad
+@@ -397,6 +411,16 @@ section .text align=64
+ 		
+ 	ALIGN4
+ 
++	DECLF Z80_WriteB_GENIX, 8
++		and ecx, 0xff
++		push edx
++		push ecx
++		call GENIX_Write
++		add esp, 8
++		ret
++
++	ALIGN4
++
+ 	DECLF Z80_WriteB_PSG, 8
+ 		cmp ecx, 0x7F11
+ 		jne short .other
+@@ -460,6 +484,15 @@ section .text align=64
+ 		ret
+ 		
+ 	ALIGN4
++
++	DECLF Z80_WriteW_GENIX, 8
++		push edx
++		push ecx
++		call GENIX_Write
++		add esp, 8
++		ret
++
++	ALIGN4
+ 	
+ 	DECLF Z80_WriteW_PSG, 8
+ 		cmp ecx, 0x7F11
+@@ -499,4 +532,4 @@ section .text align=64
+ 		push ecx
+ 		call M68K_WB
+ 		add esp, 16
+-		ret
+\ No newline at end of file
++		ret

@@ -10,6 +10,11 @@ LDFLAGS =
 CFLAGS = -g -O2 -m68000
 ASFLAGS = -g
 
+# Uncomment this if you're running in a gx-log patched Gens 2.15.5 and
+# wish to view logging output (this will probably just screw with the
+# YM2612 in weird ways if you run in an unpatched Gens)
+# CFLAGS += -DGX_LOGGING
+
 default: all
 
 GXLDIR = gx-load
