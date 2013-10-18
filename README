@@ -7,12 +7,15 @@ The tools and code snippets contained in GENIX:
     as it simplifies construction of the ROM header, and allows various
     utilities such as `strip' to be used on the final ELF.
 
+-------[ EVERYTHING ABOVE THIS LINE IS USABLY COMPLETE ]-------
+-------[  EVERYTHING BELOW THIS LINE NEEDS WORK STILL  ]-------
+
   gx-log
     Patchset for the gens emulator and 68k snippets for producing output
     on the terminal. When certain compile-time parameters are defined,
     these macros produce no code at all.
 
------[ EVERYTHING ABOVE THIS LINE IS (MOSTSLY) IMPLEMENTED ]-----
+-------[  EVERYTHING BELOW THIS LINE IS ONLY PLANNED   ]-------
 
   gx-z80
     This is a set of linker scripts for producing COFF binaries for
