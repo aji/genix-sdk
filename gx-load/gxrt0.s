@@ -1,6 +1,16 @@
 	.section .text
 	.globl _start
 _start:
+	/* tmss, taken from the wikibooks page */
+	move.b	(0xa10001), %d0
+	andi.b	#0xf, %d0
+	beq.b	v_0
+	move.b	'S', 0xa14000
+	move.b	'E', 0xa14001
+	move.b	'G', 0xa14002
+	move.b	'A', 0xa14003
+v_0:
+
 	/* set up stack */
 	move.l	#0x01000000, %sp
 
