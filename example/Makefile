@@ -7,7 +7,7 @@ LD = $(CROSS)ld
 CC = $(CROSS)gcc
 AS = $(CROSS)as
 LDFLAGS =
-CFLAGS = -g -O2 -m68000
+CFLAGS = -g -O2 -m68000 -I.
 ASFLAGS = -g
 
 # Uncomment this if you're running in a gx-log patched Gens 2.15.5 and

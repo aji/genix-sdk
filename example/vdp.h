@@ -6,7 +6,7 @@
 /* The VDP used in the Sega Mega Drive is an enhanced version of the
    TMS9918 from Texas Instruments */
 
-#include "types.h"
+#include <gx-core/types.h>
 
 #define VDP_DATA   0xc00000
 #define VDP_CTL    0xc00004

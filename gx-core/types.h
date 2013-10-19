@@ -1,7 +1,7 @@
-/* genix/types.h, Copyright (C) 2013 Alex Iadicicco */
+/* gx-core/types.h, Copyright (C) 2013 Alex Iadicicco */
 
-#ifndef __INC_GENIX_TYPES_H__
-#define __INC_GENIX_TYPES_H__   1
+#ifndef __INC_GX_CORE_TYPES_H__
+#define __INC_GX_CORE_TYPES_H__   1
 
 typedef unsigned char u8;
 typedef unsigned short u16;
