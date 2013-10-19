@@ -1,5 +1,5 @@
 NAME = coolgame
-OBJECTS = main.o vdp.o
+OBJECTS = main.o vdp.o log.o
 HEADERS = vdp.h
 
 CROSS = m68k-unknown-elf-

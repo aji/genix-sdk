@@ -1,26 +1,141 @@
-diff -rupN '-xMake*' gens-2.15.5/src/gens/gens_core/genix/genix.c gens-2.15.5-gx-log/src/gens/gens_core/genix/genix.c
+diff -rupN -xMakefile -xMakefile.in gens-2.15.5/src/gens/gens_core/genix/genix.c gens-2.15.5-gx-log/src/gens/gens_core/genix/genix.c
 --- gens-2.15.5/src/gens/gens_core/genix/genix.c	1969-12-31 17:00:00.000000000 -0700
-+++ gens-2.15.5-gx-log/src/gens/gens_core/genix/genix.c	2013-10-17 01:39:56.357579713 -0700
-@@ -0,0 +1,18 @@
++++ gens-2.15.5-gx-log/src/gens/gens_core/genix/genix.c	2013-10-18 23:46:46.850185096 -0700
+@@ -0,0 +1,133 @@
 +#include <stdio.h>
++
++#include "../cpu/68k/star_68k.h"
++#include "../cpu/68k/cpu_68k.h"
++#include "../mem/mem_m68k.h"
++
++static unsigned char read_68k_byte(unsigned at)
++{
++	int v;
++	v = main68k_fetch(at & ~0x1);
++	if (at & 0x1)
++		return v & 0xff;
++	return (v >> 8) & 0xff;
++}
++
++/* potential stack overflow here, but it's not a big deal since we're not
++   running arbitrary code. just don't send strings to gx-log that are longer
++   than 2048 chars :D */
++static size_t read_cstr(char *buf, unsigned start)
++{
++	size_t n = 0;
++
++	for (;; n++, start++) {
++		buf[n] = read_68k_byte(start);
++		if (buf[n] == '\0')
++			break;
++	}
++
++	return n;
++}
++
++static unsigned read_long(unsigned at)
++{
++	return (read_68k_byte(at + 0) << 24) |
++	       (read_68k_byte(at + 1) << 16) |
++	       (read_68k_byte(at + 2) <<  8) |
++	       (read_68k_byte(at + 3) <<  0);
++}
++
++static void gx_log_format(unsigned data, unsigned faddr, unsigned daddr)
++{
++	char *f, fmtbuf[2048], databuf[2048];
++
++	read_cstr(fmtbuf, faddr);
++
++	for (f=fmtbuf; *f; f++) {
++		if (*f != '*') {
++			putchar(*f);
++			continue;
++		}
++		f++;
++
++		switch (*f) {
++		case 'd':
++			printf("%d", read_long(daddr));
++			daddr += 4;
++			break;
++		case 'x':
++			printf("%x", read_long(daddr));
++			daddr += 4;
++			break;
++		case 'p':
++			printf("0x%06X", read_long(daddr));
++			daddr += 4;
++			break;
++		case 's':
++			read_cstr(databuf, read_long(daddr));
++			daddr += 4;
++			printf("%s", databuf);
++			break;
++		}
++	}
++}
++
++static void gx_log_hexdump(unsigned data, unsigned start, unsigned end)
++{
++	unsigned fstart, fend, x;
++	unsigned char c;
++
++	if (start == end) {
++		/* hax */
++		printf("%6x:\n", start & ~0xf);
++		return;
++	}
++
++	fstart = start & ~0xf;
++	fend = ((end-1) & ~0xf) + 0x10;
++
++	for (x=fstart; x<fend; x++) {
++		if ((x & 0xf) == 0)
++			printf("%6x:", x);
++
++		if (start <= x && x < end) {
++			c = read_68k_byte(x);
++			printf(" %02x", c);
++		} else {
++			printf("   ");
++		}
++
++		if ((x & 0xf) == 0xf)
++			printf("\n");
++	}
++}
++
++static void gx_log_status(unsigned data)
++{
++	printf("gx_log_status not implemented yet!\n");
++}
++
++static void gx_log_config(unsigned data, unsigned paddr)
++{
++	printf("gx_log_config not implemented yet!\n");
++}
 +
 +void GENIX_Write(unsigned addr, unsigned data)
 +{
-+	switch (addr & 0xfff) {
++	switch (addr & 0x3) {
 +	case 0:
-+		putchar(data);
++		gx_log_format(data, main68k_context.areg[0],
++		              main68k_context.areg[1]);
 +		break;
-+
 +	case 1:
-+		printf("%d\n", data);
++		gx_log_hexdump(data, main68k_context.areg[0],
++		               main68k_context.areg[1]);
 +		break;
-+
 +	case 2:
-+		printf("0x%x\n", data);
++		gx_log_status(data);
++		break;
++	case 3:
++		gx_log_config(data, main68k_context.areg[0]);
 +		break;
 +	}
 +}
-diff -rupN '-xMake*' gens-2.15.5/src/gens/gens_core/genix/genix.h gens-2.15.5-gx-log/src/gens/gens_core/genix/genix.h
+diff -rupN -xMakefile -xMakefile.in gens-2.15.5/src/gens/gens_core/genix/genix.h gens-2.15.5-gx-log/src/gens/gens_core/genix/genix.h
 --- gens-2.15.5/src/gens/gens_core/genix/genix.h	1969-12-31 17:00:00.000000000 -0700
 +++ gens-2.15.5-gx-log/src/gens/gens_core/genix/genix.h	2013-10-17 01:43:55.394370896 -0700
 @@ -0,0 +1,9 @@
@@ -33,7 +148,7 @@ diff -rupN '-xMake*' gens-2.15.5/src/gens/gens_core/genix/genix.h gens-2.15.5-gx
 +void GENIX_Write(unsigned addr, unsigned data);
 +
 +#endif
-diff -rupN '-xMake*' gens-2.15.5/src/gens/gens_core/mem/mem_z80.asm gens-2.15.5-gx-log/src/gens/gens_core/mem/mem_z80.asm
+diff -rupN -xMakefile -xMakefile.in gens-2.15.5/src/gens/gens_core/mem/mem_z80.asm gens-2.15.5-gx-log/src/gens/gens_core/mem/mem_z80.asm
 --- gens-2.15.5/src/gens/gens_core/mem/mem_z80.asm	2005-03-08 14:02:39.000000000 -0700
 +++ gens-2.15.5-gx-log/src/gens/gens_core/mem/mem_z80.asm	2013-10-17 01:36:54.989082130 -0700
 @@ -26,6 +26,8 @@ section .text align=64
@@ -147,3 +262,15 @@ diff -rupN '-xMake*' gens-2.15.5/src/gens/gens_core/mem/mem_z80.asm gens-2.15.5-
 -		ret
 \ No newline at end of file
 +		ret
+diff -rupN -xMakefile -xMakefile.in gens-2.15.5/src/gens/Makefile.am gens-2.15.5-gx-log/src/gens/Makefile.am
+--- gens-2.15.5/src/gens/Makefile.am	2005-03-08 14:02:54.000000000 -0700
++++ gens-2.15.5-gx-log/src/gens/Makefile.am	2013-10-17 01:40:17.028167644 -0700
+@@ -91,6 +91,8 @@ gens_SOURCES = \
+ 		gens_core/vdp/vdp_rend.asm \
+ 		gens_core/vdp/vdp_rend.h \
+ 		gens_core/vdp/vdp_32x.asm \
++		gens_core/genix/genix.h \
++		gens_core/genix/genix.c \
+ 		segacd/cd_aspi.c \
+ 		segacd/cd_aspi.h \
+ 		segacd/cd_file.c \
