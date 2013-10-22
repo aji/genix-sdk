@@ -24,22 +24,22 @@ gx_vdp_mode:
 	ori.l	#VDPM_ALWAYS, %d0
 	move.l	%d0, -(%sp)
 
-	move.w	#0x8000, %d0   /* MSR1 */
+	move.w	#VDP_MSR1, %d0
 	or.b	(%sp), %d0
 	add.l	#1, %sp
 	move.w	%d0, VDP_CTL
 
-	move.w	#0x8100, %d0   /* MSR2 */
+	move.w	#VDP_MSR2, %d0
 	or.b	(%sp), %d0
 	add.l	#1, %sp
 	move.w	%d0, VDP_CTL
 
-	move.w	#0x8b00, %d0   /* MSR3 */
+	move.w	#VDP_MSR3, %d0
 	or.b	(%sp), %d0
 	add.l	#1, %sp
 	move.w	%d0, VDP_CTL
 
-	move.w	#0x8c00, %d0   /* MSR4 */
+	move.w	#VDP_MSR4, %d0
 	or.b	(%sp), %d0
 	add.l	#1, %sp
 	move.w	%d0, VDP_CTL
@@ -53,7 +53,7 @@ gx_set_base_window:
 	and.l	#0xf800, %d0
 	move.w	#10, %d1
 	lsr.l	%d1, %d0
-	or.w	#0x8300, %d0
+	or.w	#VDP_PNTWN, %d0
 	move.w	%d0, VDP_CTL
 
 	rts
@@ -64,7 +64,7 @@ gx_set_base_scrolla:
 	and.l	#0xe000, %d0
 	move.w	#10, %d1
 	lsr.l	%d1, %d0
-	or.w	#0x8200, %d0
+	or.w	#VDP_PNTSA, %d0
 	move.w	%d0, VDP_CTL
 
 	rts
@@ -75,7 +75,7 @@ gx_set_base_scrollb:
 	and.l	#0xe000, %d0
 	move.w	#13, %d1
 	lsr.l	%d1, %d0
-	or.w	#0x8400, %d0
+	or.w	#VDP_PNTSB, %d0
 	move.w	%d0, VDP_CTL
 
 	rts
@@ -86,7 +86,7 @@ gx_set_base_sprite:
 	and.l	#0xfe00, %d0
 	move.w	#9, %d1
 	lsr.l	%d1, %d0
-	or.w	#0x8500, %d0
+	or.w	#VDP_SAT, %d0
 	move.w	%d0, VDP_CTL
 
 	rts
