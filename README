@@ -7,6 +7,9 @@ The tools and code snippets contained in GENIX:
     as it simplifies construction of the ROM header, and allows various
     utilities such as `strip' to be used on the final ELF.
 
+  gx-vdp
+    A set of macros and code for making interaction with the VDP nicer.
+
 -------[ EVERYTHING ABOVE THIS LINE IS USABLY COMPLETE ]-------
 -------[  EVERYTHING BELOW THIS LINE NEEDS WORK STILL  ]-------
 
