@@ -34,6 +34,8 @@
 #define VDPM_LSM_ON  0x00000002
 #define VDPM_LMS_DBL 0x00000006
 
+#define gx_in_vblank() ((*VDP_CTL16 & 8) > 0)
+
 extern void gx_vdp_mode(u32 mode);
 
 extern void gx_set_base_window(u32 addr);
