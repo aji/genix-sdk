@@ -13,6 +13,7 @@
 	.globl gx_set_base_scrolla
 	.globl gx_set_base_scrollb
 	.globl gx_set_base_sprite
+	.globl gx_set_base_hscroll
 
 	.globl gx_copy_to_vram
 	.globl gx_copy_to_cram
@@ -87,6 +88,17 @@ gx_set_base_sprite:
 	move.w	#9, %d1
 	lsr.l	%d1, %d0
 	or.w	#VDP_SAT, %d0
+	move.w	%d0, VDP_CTL
+
+	rts
+
+gx_set_base_hscroll:
+
+	move.l	4(%sp), %d0
+	and.l	#0xfc00, %d0
+	move.w	#10, %d1
+	lsr.l	%d1, %d0
+	or.w	#VDP_HSDT, %d0
 	move.w	%d0, VDP_CTL
 
 	rts

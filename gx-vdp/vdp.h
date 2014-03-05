@@ -42,6 +42,7 @@ extern void gx_set_base_window(u32 addr);
 extern void gx_set_base_scrolla(u32 addr);
 extern void gx_set_base_scrollb(u32 addr);
 extern void gx_set_base_sprite(u32 addr);
+extern void gx_set_base_hscroll(u32 addr);
 
 /* When I figure out DMA, I will have DMA versions of these as well */
 extern void gx_copy_to_vram(u32 to, u16 *from, u32 len);
