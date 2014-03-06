@@ -49,4 +49,23 @@ extern void gx_copy_to_vram(u32 to, u16 *from, u32 len);
 extern void gx_copy_to_cram(u32 to, u16 *from, u32 len);
 extern void gx_copy_to_vsram(u32 to, u16 *from, u32 len);
 
+/* some helpful data structures */
+
+struct gx_vdp_pattern {
+	unsigned prio:1;
+	unsigned palette:2;
+	unsigned vflip:1;
+	unsigned hflip:1;
+	unsigned name:11;
+};
+
+struct gx_vdp_sprite {
+	u16 y; /* 10 bits */
+	unsigned hsize:6; /* 2 bits */
+	unsigned vsize:2; /* 2 bits */
+	u8 link; /* 7 bits */
+	struct gx_vdp_pattern pat;
+	u16 x; /* 10 bits */
+};
+
 #endif
