@@ -68,4 +68,33 @@ struct gx_vdp_sprite {
 	u16 x; /* 10 bits */
 };
 
+#define gx_vdp_pattern_addr(n) ((n) << 5)
+#define gx_vdp_palette_addr(pal, n) ((((pal)<<5)&0x1e0) | (((n)<<1)&0x1e))
+#define gx_vdp_sprite_offs(n) ((n) << 3)
+
+static inline void gx_set_palette(int pal, int n, u16 color)
+{
+	gx_copy_to_cram(gx_vdp_palette_addr(pal, n), &color, 2);
+}
+
+static inline void gx_set_sprite(u16 base, int n, struct gx_vdp_sprite *sp)
+{
+	gx_copy_to_vram(base + gx_vdp_sprite_offs(n), sp, sizeof(*sp));
+}
+
+static inline void gx_copy_to_pattern(u16 pat, const void *from, u32 len)
+{
+	gx_copy_to_vram(gx_vdp_pattern_addr(pat), from, len);
+}
+
+static inline void gx_copy_to_palette(u8 pal, u8 ent, const void *from, u32 len)
+{
+	gx_copy_to_cram(gx_vdp_palette_addr(pal, ent), from, len);
+}
+
+#define gx_array_to_pattern(pat, array) \
+	gx_copy_to_pattern(pat, array, sizeof(array))
+#define gx_array_to_palette(pal, ent, array) \
+	gx_copy_to_palette(pal, ent, array, sizeof(array))
+
 #endif
