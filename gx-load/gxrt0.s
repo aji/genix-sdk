@@ -1,3 +1,35 @@
+	.section .vectbl
+	.long	0                  /* initial stack pointer */
+	.long	_start             /* entry point */
+	.long	0                  /* bus error */
+	.long	0                  /* address error */
+
+	.long	0                  /* illegal instr */
+	.long	0                  /* zero divide */
+	.long	0                  /* chk instr */
+	.long	0                  /* trapv instr */
+
+	.long	0                  /* privilege viol */
+	.long	0                  /* trace */
+	.long	0                  /* line1010 emu */
+	.long	0                  /* line1111 emu */
+
+	.long	0, 0, 0
+	.long	0                  /* uninit. vector */
+
+	.long	0, 0, 0, 0
+
+	.long	0, 0, 0, 0
+
+	.long	0                  /* spurious interrupt */
+	.long	0                  /* level 1 autovec */
+	.long	0                  /* level 2 autovec */
+	.long	0                  /* level 3 autovec */
+	.long	0                  /* level 4 autovec */
+	.long	0                  /* level 5 autovec */
+	.long	__gx_vint_handler  /* level 6 autovec */
+	.long	0                  /* level 7 autovec */
+
 	.section .text
 	.globl _start
 _start:
@@ -10,6 +42,8 @@ _start:
 	move.b	'G', 0xa14002
 	move.b	'A', 0xa14003
 v_0:
+	andi.w	#0xf0ff, %sr
+	ori.w	#0x0300, %sr
 
 	/* set up stack */
 	move.l	#0x01000000, %sp
@@ -37,5 +71,10 @@ v_0:
 
 	/* jump to the main program */
 	jsr	main
-1:	nop
+
+__die:
+	nop
 	jmp	1b
+
+__ignore:
+	rte
