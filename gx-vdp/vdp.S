@@ -2,8 +2,8 @@
 
 #include <gx-vdp/names.h>
 
-#define VDPM_MASK    0x12780f8f
-#define VDPM_ALWAYS  0x04440000 /* includes display enable */
+#define VDPM_MASK    0x12f80f8f
+#define VDPM_ALWAYS  0x04040000
 
 	.text
 

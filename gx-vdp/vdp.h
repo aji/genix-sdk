@@ -17,6 +17,7 @@
    applied by default */
 
 #define VDPM_HINT    0x10000000
+#define VDPM_ENABLE  0x00400000
 #define VDPM_VINT    0x00200000
 #define VDPM_V28C    0
 #define VDPM_V30C    0x00080000
