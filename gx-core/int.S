@@ -5,14 +5,11 @@
 	.globl	__gx_vint_handler
 
 __gx_vint_handler:
-	ori.w	#0x0700, %sr
 	move.l	(gx_vint_vec), %a0
-	jsr	(%a0)
-	andi.w	#0xf3ff, %sr
-	rte
+	jmp	(%a0)
 
 nothing:
-	rts
+	rte
 
 
 	.section .data

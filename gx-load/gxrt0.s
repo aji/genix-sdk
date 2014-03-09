@@ -42,8 +42,7 @@ _start:
 	move.b	'G', 0xa14002
 	move.b	'A', 0xa14003
 v_0:
-	andi.w	#0xf0ff, %sr
-	ori.w	#0x0300, %sr
+	andi.w	#0xf5ff, %sr
 
 	/* set up stack */
 	move.l	#0x01000000, %sp
