@@ -97,4 +97,18 @@ static inline void gx_copy_to_palette(u8 pal, u8 ent, const void *from, u32 len)
 #define gx_array_to_palette(pal, ent, array) \
 	gx_copy_to_palette(pal, ent, array, sizeof(array))
 
+/* and some nifty macros for fastfastfast vdp access */
+
+#define gx_start_vram(addr) ((*VDP_CTL32 = 0x40000000 \
+	| (((addr) & 0x3fff) << 16) | (((addr) & 0xc000) >> 14)), 0)
+#define gx_start_cram(addr) ((*VDP_CTL32 = 0xc0000000 \
+	| (((addr) & 0x3fff) << 16) | (((addr) & 0xc000) >> 14)), 0)
+#define gx_start_vsram(addr) ((*VDP_CTL32 = 0x40000010 \
+	| (((addr) & 0x3fff) << 16) | (((addr) & 0xc000) >> 14)), 0)
+
+#define gx_step_size(n) (VDP_PUTREG(VDP_INCR, n), 0)
+
+#define gx_put_word(data) (*VDP_DATA16 = (data), 0)
+#define gx_put_long(data) (*VDP_DATA32 = (data), 0)
+
 #endif
